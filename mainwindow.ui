@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1024</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="sizeIncrement">
+   <size>
+    <width>800</width>
+    <height>480</height>
+   </size>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::DefaultContextMenu</enum>
+  </property>
+  <property name="windowTitle">
+   <string>HardwareTest Master</string>
+  </property>
+  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1024</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuCalls">
+    <property name="title">
+     <string>Calls</string>
+    </property>
+    <addaction name="actionRefresh"/>
+    <addaction name="actionDisconnect"/>
+    <addaction name="actionConnect"/>
+    <addaction name="separator"/>
+    <addaction name="actionClose"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionConfigure"/>
+    <addaction name="actionClear"/>
+    <addaction name="separator"/>
+    <addaction name="actionSentroot"/>
+    <addaction name="actionEnter"/>
+    <addaction name="actionSetSlaveTime"/>
+    <addaction name="actionSerial"/>
+    <addaction name="actionAutoTest"/>
+    <addaction name="actionPlayAudio"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuCalls"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="contextMenuPolicy">
+    <enum>Qt::DefaultContextMenu</enum>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftToolBarArea|Qt::RightToolBarArea|Qt::TopToolBarArea</set>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionRefresh"/>
+   <addaction name="actionConnect"/>
+   <addaction name="actionDisconnect"/>
+   <addaction name="actionConfigure"/>
+   <addaction name="actionClear"/>
+   <addaction name="actionClose"/>
+   <addaction name="separator"/>
+   <addaction name="actionPlayAudio"/>
+   <addaction name="actionSentroot"/>
+   <addaction name="actionEnter"/>
+   <addaction name="actionSetSlaveTime"/>
+   <addaction name="separator"/>
+   <addaction name="actionSerial"/>
+   <addaction name="separator"/>
+   <addaction name="actionAutoTest"/>
+   <addaction name="separator"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionConnect">
+   <property name="icon">
+    <iconset resource="hardwaretest_master.qrc">
+     <normaloff>:/images/connect.png</normaloff>:/images/connect.png</iconset>
+   </property>
+   <property name="text">
+    <string>Connect</string>
+   </property>
+  </action>
+  <action name="actionDisconnect">
+   <property name="icon">
+    <iconset resource="hardwaretest_master.qrc">
+     <normaloff>:/images/disconnect.png</normaloff>:/images/disconnect.png</iconset>
+   </property>
+   <property name="text">
+    <string>Disconnect</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="icon">
+    <iconset resource="hardwaretest_master.qrc">
+     <normaloff>:/images/application-exit.png</normaloff>:/images/application-exit.png</iconset>
+   </property>
+   <property name="text">
+    <string>Close</string>
+   </property>
+  </action>
+  <action name="actionSentroot">
+   <property name="icon">
+    <iconset resource="hardwaretest_master.qrc">
+     <normaloff>:/images/root.png</normaloff>:/images/root.png</iconset>
+   </property>
+   <property name="text">
+    <string>SentRoot</string>
+   </property>
+   <property name="toolTip">
+    <string>SentRoot</string>
+   </property>
+  </action>
+  <action name="actionEnter">
+   <property name="icon">
+    <iconset resource="hardwaretest_master.qrc">
+     <normaloff>:/images/enter.png</normaloff>:/images/enter.png</iconset>
+   </property>
+   <property name="text">
+    <string>Enter</string>
+   </property>
+  </action>
+  <action name="actionRefresh">
+   <property name="icon">
+    <iconset resource="hardwaretest_master.qrc">
+     <normaloff>:/images/refresh.png</normaloff>:/images/refresh.png</iconset>
+   </property>
+   <property name="text">
+    <string>Refresh</string>
+   </property>
+  </action>
+  <action name="actionSetSlaveTime">
+   <property name="icon">
+    <iconset resource="hardwaretest_master.qrc">
+     <normaloff>:/images/setTime.png</normaloff>:/images/setTime.png</iconset>
+   </property>
+   <property name="text">
+    <string>SetSlaveTime</string>
+   </property>
+  </action>
+  <action name="actionConfigure">
+   <property name="icon">
+    <iconset resource="hardwaretest_master.qrc">
+     <normaloff>:/images/settings.png</normaloff>:/images/settings.png</iconset>
+   </property>
+   <property name="text">
+    <string>Configure</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="icon">
+    <iconset resource="hardwaretest_master.qrc">
+     <normaloff>:/images/clear.png</normaloff>:/images/clear.png</iconset>
+   </property>
+   <property name="text">
+    <string>Clear</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionSerial">
+   <property name="icon">
+    <iconset resource="hardwaretest_master.qrc">
+     <normaloff>:/images/serial.png</normaloff>:/images/serial.png</iconset>
+   </property>
+   <property name="text">
+    <string>Serial</string>
+   </property>
+  </action>
+  <action name="actionAutoTest">
+   <property name="icon">
+    <iconset resource="hardwaretest_master.qrc">
+     <normaloff>:/images/Test.png</normaloff>:/images/Test.png</iconset>
+   </property>
+   <property name="text">
+    <string>AutoTest</string>
+   </property>
+  </action>
+  <action name="actionPlayAudio">
+   <property name="icon">
+    <iconset resource="hardwaretest_master.qrc">
+     <normaloff>:/images/player.png</normaloff>:/images/player.png</iconset>
+   </property>
+   <property name="text">
+    <string>PlayAudio</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="hardwaretest_master.qrc"/>
+ </resources>
+ <connections/>
+</ui>
