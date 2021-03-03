@@ -11,6 +11,8 @@
 #include <QTextStream>
 #include <QTimer>
 #include <QDateTime>
+#include <QDebug>
+#include <QProgressDialog>
 
 #define timeOut 2000
 
@@ -51,12 +53,23 @@ MainWindow::MainWindow(QWidget *parent) :
             this, &MainWindow::handleError);
     connect(serial, &QSerialPort::readyRead, this, &MainWindow::readData);
     connect(console, &Console::getData, this, &MainWindow::writeData);
+
+    // open and refresh serialport automaticly
+    openSerialPort();
+    autoRefreshTimer= new QTimer(this);
+    connect(autoRefreshTimer,SIGNAL(timeout()),this,SLOT(reFresh()));
+    autoRefreshTimer->start(5000);
 }
 
 MainWindow::~MainWindow()
 {
     delete settings;
     delete ui;
+}
+
+void MainWindow::setTestDevice(QString &device)
+{
+    testDevice = device;
 }
 
 void MainWindow::openSerialPort()
@@ -91,6 +104,14 @@ void MainWindow::openSerialPort()
 
         showStatusMessage(tr("Open error"));
     }
+
+    setTestDevice(p.testDevice);
+}
+
+void MainWindow::manOpenSerialPort()
+{
+    openSerialPort();
+    autoRefreshTimer->start(5000);
 }
 
 void MainWindow::closeSerialPort()
@@ -111,10 +132,16 @@ void MainWindow::closeSerialPort()
     showStatusMessage(tr("Disconnected"));
 }
 
+void MainWindow::manCloseSerialPort()
+{
+    autoRefreshTimer->stop();
+    closeSerialPort();
+}
+
 void MainWindow::about()
 {
     QMessageBox::about(this, tr("About Hardwaretest_master"),
-                       tr("<b>Hardwaretest_master v1.0</b><br><br> The <b>Hardwaretest_master</b> used as chipsee hardwaretest master, "
+                       tr("<b>Hardwaretest_master v2.0</b><br><br> The <b>Hardwaretest_master</b> used as chipsee hardwaretest master, "
                           "it works with hardwaretest_slave to test chipsee devices."));
 }
 
@@ -140,8 +167,8 @@ void MainWindow::handleError(QSerialPort::SerialPortError error)
 void MainWindow::initActionsConnections()
 {
     connect(ui->actionRefresh,&QAction::triggered,this,&MainWindow::reFresh);
-    connect(ui->actionConnect, &QAction::triggered, this, &MainWindow::openSerialPort);
-    connect(ui->actionDisconnect, &QAction::triggered, this, &MainWindow::closeSerialPort);
+    connect(ui->actionConnect, &QAction::triggered, this, &MainWindow::manOpenSerialPort);
+    connect(ui->actionDisconnect, &QAction::triggered, this, &MainWindow::manCloseSerialPort);
     connect(ui->actionConfigure, &QAction::triggered, settings, &MainWindow::show);
     connect(ui->actionClear, &QAction::triggered, console, &Console::clear);
     connect(ui->actionClose, &QAction::triggered, this, &MainWindow::close);
@@ -179,7 +206,8 @@ void MainWindow::reFresh()
 {
     closeSerialPort();
     openSerialPort();
-    showStatusMessage(tr("reFresh OK!!"));
+    showStatusMessage(tr("Testing Device is ") + testDevice + ", reFresh OK!!");
+    //qDebug() << "Refresh";
 }
 
 void MainWindow::playAudio()
@@ -204,6 +232,23 @@ void MainWindow::enter()
 
 void MainWindow::autoTest()
 {
+    autoRefreshTimer->stop();
+
+    QProgressDialog *progressDialog=new QProgressDialog(this);
+    progressDialog->setWindowModality(Qt::WindowModal);
+    progressDialog->setMinimumDuration(0); //display progressDialog quickly, default is 4 seconds.
+    progressDialog->setWindowTitle(tr("Wait"));
+    progressDialog->setLabelText(tr("Testing..."));
+    progressDialog->setCancelButton(0); //disable cancel button
+    //progressDialog->setCancelButtonText(tr("Cancel"));
+    progressDialog->setRange(0,100);
+    progressDialog->setValue(10);
+
+    //add this to display progressDialog quickly
+    QEventLoop eventloop;
+    QTimer::singleShot(1000, &eventloop,SLOT(quit()));
+    eventloop.exec();
+
 //    connect(&thread, &MasterThread::request, this,&MainWindow::showRequest);
 //    thread.startMaster();
     showStatusMessage(tr("Testing serial... ..."));
@@ -226,53 +271,162 @@ void MainWindow::autoTest()
     QString requestData = "abcdefjhijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-+=,.?/;:'!@#$%^&*()";
     QSerialPort serial;
     QByteArray responseData;
-    QString testResult = "TestResult:\n";
+    QString testResult = "Serial Port:\n";
+    QString cmdstr = "echo > /tmp/serial.txt";
+    system(cmdstr.toLocal8Bit());
+    int testTimes = 0;
 
-    foreach(const QSerialPortInfo &info, QSerialPortInfo::availablePorts()){
-        serial.setPortName(info.portName());
-        serial.setBaudRate(QSerialPort::Baud115200);
-        serial.setDataBits(QSerialPort::Data8);
-        serial.setParity(QSerialPort::NoParity);
-        serial.setStopBits(QSerialPort::OneStop);
-        serial.setFlowControl(QSerialPort::NoFlowControl);
+    while(testTimes < 8){
 
-        if(serial.isOpen() || MainWindow::serial->isOpen())
-        {
-            serial.close();
-            MainWindow::serial->close();
-        }
-        if(serial.open(QIODevice::ReadWrite)){
+        foreach(const QSerialPortInfo &info, QSerialPortInfo::availablePorts()){
+            serial.setPortName(info.portName());
+            serial.setBaudRate(QSerialPort::Baud115200);
+            serial.setDataBits(QSerialPort::Data8);
+            serial.setParity(QSerialPort::NoParity);
+            serial.setStopBits(QSerialPort::OneStop);
+            serial.setFlowControl(QSerialPort::NoFlowControl);
 
-            // write request
-            serial.write(requestData.toLocal8Bit());
-            if(serial.waitForBytesWritten(500)){
+            if(serial.isOpen() || MainWindow::serial->isOpen())
+            {
+                serial.close();
+                MainWindow::serial->close();
+            }
+            if(serial.open(QIODevice::ReadWrite)){
 
-                // read response
-                if(serial.waitForReadyRead(1000)){
-                    responseData = serial.readAll();
-                    while(serial.waitForReadyRead(10))
-                        responseData += serial.readAll();
-                    QString response(responseData);
-                    if (requestData == response)
-                        testResult +=QString(info.portName()) + " is OK.\n";
-                    else
-                        testResult +=QString(info.portName()) + " is Not OK.\n";
+                // write request
+                serial.write(requestData.toLocal8Bit());
+                if(serial.waitForBytesWritten(500)){
+
+                    // read response
+                    if(serial.waitForReadyRead(1000)){
+                        responseData = serial.readAll();
+                        while(serial.waitForReadyRead(10))
+                            responseData += serial.readAll();
+                        QString response(responseData);
+                        if (requestData == response) {
+                                //testResult +=QString(info.portName()) + " is OK.\n";
+                                cmdstr="echo " + QString(info.portName()) +" OK." + " >> /tmp/serial.txt";
+                                system(cmdstr.toLocal8Bit());
+                        }
+                        else {
+                            //testResult +=QString(info.portName()) + " is Not OK.\n";
+                            cmdstr="echo " + QString(info.portName()) +" NOK." + " >> /tmp/serial.txt";
+                            system(cmdstr.toLocal8Bit());
+                        }
+                    } else {
+                        //testResult +=QString(info.portName()) + " is Not Detected.\n";
+                        cmdstr="echo " + QString(info.portName()) +" NOD." + " >> /tmp/serial.txt";
+                        system(cmdstr.toLocal8Bit());
+                    }
                 } else
-                    testResult +=QString(info.portName()) + " is Not Detected.\n";
+                    showStatusMessage(QString(info.portName())+" write error.");
             } else
-                showStatusMessage(QString(info.portName())+" write error.");
-        } else
-                showStatusMessage(QString(info.portName())+" open error");
+                    showStatusMessage(QString(info.portName())+" open error");
+        }
+        testTimes++;
+        progressDialog->setValue(testTimes*10+10);
     }
 
+    //QEventLoop eventloop;
+    QTimer::singleShot(1000, &eventloop,SLOT(quit()));
+    eventloop.exec();
+
+    QString filePath0 = "/tmp/serial.txt";
+    QFile file0(filePath0);
+    if (file0.open(QIODevice::ReadWrite)){
+        QTextStream in(&file0);
+        QString line=in.readAll();
+        //ttymxc0
+        if(line.contains("ttymxc0 NOD")){
+            testResult += "COM0 is Not Detected.\n";
+        } else if (line.contains("ttymxc0 OK")){
+            testResult += "COM0 is OK.\n";
+        } else {
+            testResult += "COM0 is Not OK.\n";
+        }
+
+        //ttymxc1
+        if(line.contains("ttymxc1 NOD")){
+            if(testDevice == "CS10600RA070") {
+                testResult += "COM2 is Not Detected.\n";
+            }else{
+                testResult += "COM1 is Not Detected.\n";
+            }
+        } else if (line.contains("ttymxc1 OK")){
+            if(testDevice == "CS10600RA070") {
+                testResult += "COM2 is OK.\n";
+            }else{
+                testResult += "COM1 is OK.\n";
+            }
+        } else {
+            if(testDevice == "CS10600RA070") {
+                testResult += "COM2 is Not OK.\n";
+            }else{
+                testResult += "COM1 is Not OK.\n";
+            }
+        }
+
+        //ttymxc2
+        if(line.contains("ttymxc2 NOD")){
+            if(testDevice == "CS10600RA070") {
+                testResult += "COM1 is Not Detected.\n";
+            }else{
+                testResult += "COM2 is Not Detected.\n";
+            }
+        } else if (line.contains("ttymxc2 OK")){
+            if(testDevice == "CS10600RA070") {
+                testResult += "COM1 is OK.\n";
+            }else{
+                testResult += "COM2 is OK.\n";
+            }
+        } else {
+            if(testDevice == "CS10600RA070") {
+                testResult += "COM1 is Not OK.\n";
+            }else{
+                testResult += "COM2 is Not OK.\n";
+            }
+        }
+
+        //ttymxc3
+        if(line.contains("ttymxc3 NOD")){
+            testResult += "COM3 is Not Detected.\n";
+        } else if (line.contains("ttymxc3 OK")){
+            testResult += "COM3 is OK.\n";
+        } else {
+            testResult += "COM3 is Not OK.\n";
+        }
+
+        //ttymxc4
+        if(line.contains("ttymxc4 NOD")){
+            testResult += "COM4 is Not Detected.\n";
+        } else if (line.contains("ttymxc4 OK")){
+            testResult += "COM4 is OK.\n";
+        } else {
+            testResult += "COM4 is Not OK.\n";
+        }
+
+        // recheck ttymxc0 which will break other serial port.
+        // one bug for this application
+        if(line.contains("ttymxc0 NOD")){
+            testResult = "COM0 error, fix and test again.\n";
+        }
+
+    } else {
+        showStatusMessage(QString("Cann't open file %1, error code is %2").arg(filePath0).arg(file0.error()));
+    }
+    file0.close();
+
+    testResult += "\n";
+    testResult += "CAN Port:\n";
+
     // Test CAN
-    QEventLoop eventloop;
+    //QEventLoop eventloop;
     QTimer::singleShot(1000, &eventloop,SLOT(quit()));
     eventloop.exec();
 
     showStatusMessage(tr("Testing can... ..."));
     QString filePath = "/tmp/can0.txt";
-    QFile file("/tmp/can0.txt");
+    QFile file(filePath);
     if (file.open(QIODevice::ReadWrite)){
         QTextStream in(&file);
         QString line=in.readAll();
@@ -300,14 +454,22 @@ void MainWindow::autoTest()
         showStatusMessage(QString("Cann't open file %1, error code is %2").arg(filePath1).arg(file.error()));
     }
     file1.close();
-
+    progressDialog->setValue(100);
+    progressDialog->wasCanceled();
     showStatusMessage("Test end!");
     system("killall gst-play-1.0");
     system("gst-play-1.0 /usr/hardwaretest/AutoTestFinish.aac >/dev/null &");
-    showRequest(testResult);   
+    testResult += "\nDevice: " + testDevice;
+    showRequest(testResult);
+
+    autoRefreshTimer->start(5000);
 }
 
 void MainWindow::showRequest(const QString &s)
 {
-    QMessageBox::critical(this,"TestResult",s);
+    //QMessageBox::critical(this,"TestResult",s);
+    //add auto close feature
+    QMessageBox *box = new QMessageBox(QMessageBox::Information,"TestResult",s);
+    QTimer::singleShot(20000,box,SLOT(close()));
+    box->exec();
 }

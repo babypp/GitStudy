@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>281</width>
-    <height>262</height>
+    <width>374</width>
+    <height>331</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -156,7 +156,7 @@
      <property name="title">
       <string>Additional options</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <widget class="QCheckBox" name="localEchoCheckBox">
         <property name="text">
@@ -166,6 +166,9 @@
          <bool>true</bool>
         </property>
        </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="deviceListBox"/>
       </item>
      </layout>
     </widget>

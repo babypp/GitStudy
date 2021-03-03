@@ -68,6 +68,7 @@ public:
         QSerialPort::FlowControl flowControl;
         QString stringFlowControl;
         bool localEchoEnabled;
+        QString testDevice;
     };
 
     explicit SettingsDialog(QWidget *parent = 0);

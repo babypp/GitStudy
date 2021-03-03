@@ -57,10 +57,12 @@ void MasterThread::run()
                         testResult +=QString(info.portName()) + " is Not OK.\n";
                 } else
                     testResult +=QString(info.portName()) + " is Not Detected.\n";
-            } else ;
+            } else {
 //                MainWindow::showStatusMessage(QString(info.portName())+" write error.");
-        } else ;
+            }
+        } else {
 //            MainWindow::showStatusMessage(QString(info.portName())+" open error");
+        }
     }
     emit this->request(testResult);
 }

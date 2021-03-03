@@ -31,6 +31,8 @@ public:
 private slots:
     void openSerialPort();
     void closeSerialPort();
+    void manOpenSerialPort();
+    void manCloseSerialPort();
     void about();
     void writeData(const QByteArray &data);
     void readData();
@@ -44,6 +46,7 @@ private slots:
     void sentRoot();
     void playAudio();
     void enter();
+    void setTestDevice(QString &device);
 
 private:
     void initActionsConnections();
@@ -57,6 +60,8 @@ private:
     Console *console;
     SettingsDialog *settings;
     QSerialPort *serial;
+    QString testDevice;
+    QTimer *autoRefreshTimer;
 
     MasterThread thread;
 };

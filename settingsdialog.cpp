@@ -148,6 +148,10 @@ void SettingsDialog::fillPortsParameters()
     ui->flowControlBox->addItem(tr("RTS/CTS"), QSerialPort::HardwareControl);
     ui->flowControlBox->addItem(tr("XON/XOFF"), QSerialPort::SoftwareControl);
     ui->localEchoCheckBox->setChecked(false);
+
+    ui->deviceListBox->addItem("IMX6QDLUL");
+    ui->deviceListBox->addItem("CS10600RA070");
+    ui->dataBitsBox->setCurrentIndex(0);
 }
 
 void SettingsDialog::fillPortsInfo()
@@ -204,4 +208,5 @@ void SettingsDialog::updateSettings()
     currentSettings.stringFlowControl = ui->flowControlBox->currentText();
 
     currentSettings.localEchoEnabled = ui->localEchoCheckBox->isChecked();
+    currentSettings.testDevice = ui->deviceListBox->itemText(ui->deviceListBox->currentIndex());
 }
