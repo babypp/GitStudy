@@ -141,7 +141,7 @@ void MainWindow::manCloseSerialPort()
 void MainWindow::about()
 {
     QMessageBox::about(this, tr("About Hardwaretest_master"),
-                       tr("<b>Hardwaretest_master v2.0</b><br><br> The <b>Hardwaretest_master</b> used as chipsee hardwaretest master, "
+                       tr("<b>Hardwaretest_master v2.0 </b><br><br> The <b>Hardwaretest_master</b> used as chipsee hardwaretest master, "
                           "it works with hardwaretest_slave to test chipsee devices."));
 }
 
