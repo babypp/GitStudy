@@ -59,6 +59,10 @@ MainWindow::MainWindow(QWidget *parent) :
     autoRefreshTimer= new QTimer(this);
     connect(autoRefreshTimer,SIGNAL(timeout()),this,SLOT(reFresh()));
     autoRefreshTimer->start(5000);
+
+    // set default board and update it after client send this message
+    // check readData()
+    testDevice = "IMX6QDLUL";
 }
 
 MainWindow::~MainWindow()
@@ -105,7 +109,8 @@ void MainWindow::openSerialPort()
         showStatusMessage(tr("Open error"));
     }
 
-    setTestDevice(p.testDevice);
+    // We will receive this value from client, not fix this in master.
+    //setTestDevice(p.testDevice);
 }
 
 void MainWindow::manOpenSerialPort()
@@ -141,7 +146,7 @@ void MainWindow::manCloseSerialPort()
 void MainWindow::about()
 {
     QMessageBox::about(this, tr("About Hardwaretest_master"),
-                       tr("<b>Hardwaretest_master v2.0 </b><br><br> The <b>Hardwaretest_master</b> used as chipsee hardwaretest master, "
+                       tr("<b>Hardwaretest_master v3.0 </b><br><br> The <b>Hardwaretest_master</b> used as chipsee hardwaretest master, "
                           "it works with hardwaretest_slave to test chipsee devices."));
 }
 
@@ -153,7 +158,75 @@ void MainWindow::writeData(const QByteArray &data)
 void MainWindow::readData()
 {
     QByteArray data = serial->readAll();
+    qDebug() << QString(data);
     console->putData(data);
+
+    // Auto Play Audio
+    if(QString(data).startsWith("@@AUDIO",Qt::CaseSensitive)){
+        playAudio();
+    }
+
+    // Set Device
+    if(QString(data).startsWith("@@CS",Qt::CaseSensitive)){
+        QString str = QString(data).mid(2).remove(QChar('\n'),Qt::CaseInsensitive);
+        qDebug() << str;
+        setTestDevice(str);
+    }
+
+    if(QString(data).startsWith("@@LRRA4",Qt::CaseSensitive)){
+        QString str = QString(data).mid(2).remove(QChar('\n'),Qt::CaseInsensitive);
+        qDebug() << str;
+        setTestDevice(str);
+    }
+
+    //ZIGBEE
+    if(testDevice == "CS10600RA4070" || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101"){
+        if(QString(data).startsWith("ZIGBEEISOK",Qt::CaseSensitive)){
+            QString cmdstr = "echo Zigbee is OK > /tmp/zigbee.txt";
+            system(cmdstr.toLocal8Bit());
+        }
+
+        if(QString(data).startsWith("ZIGBEEISNOTOK",Qt::CaseSensitive)){
+            QString cmdstr = "echo Zigbee is Not OK > /tmp/zigbee.txt";
+            system(cmdstr.toLocal8Bit());
+        }
+    }else{
+        QString cmdstr = "echo > /tmp/zigbee.txt";
+        system(cmdstr.toLocal8Bit());
+    }
+
+    // RTC
+    if(QString(data).startsWith("RTCISOK",Qt::CaseSensitive)){
+        QString cmdstr = "echo RTC is OK > /tmp/rtc.txt";
+        system(cmdstr.toLocal8Bit());
+    }
+
+    if(QString(data).startsWith("RTCISNOTOK",Qt::CaseSensitive)){
+        QString cmdstr = "echo RTC is Not OK > /tmp/rtc.txt";
+        system(cmdstr.toLocal8Bit());
+    }
+
+    //CS12800RA101 ttyUSB0 ttyUSB1
+    if(testDevice == "CS12800RA101"){
+        if(QString(data).startsWith("TTYUSBISOK",Qt::CaseSensitive)){
+            QString cmdstr = "echo ttyUSB0 OK. > /tmp/serial23.txt";
+            system(cmdstr.toLocal8Bit());
+            cmdstr = "echo ttyUSB1 OK. >> /tmp/serial23.txt";
+            system(cmdstr.toLocal8Bit());
+        }
+
+        if(QString(data).startsWith("TTYUSBISNOK",Qt::CaseSensitive)){
+            QString cmdstr = "echo ttyUSB0 NOK. > /tmp/serial23.txt";
+            system(cmdstr.toLocal8Bit());
+            cmdstr = "echo ttyUSB1 NOK. >> /tmp/serial23.txt";
+            system(cmdstr.toLocal8Bit());
+        }
+    }
+
+    if(QString(data).startsWith("@@STARTTEST",Qt::CaseSensitive)){
+        autoTest();
+    }
+
 }
 
 void MainWindow::handleError(QSerialPort::SerialPortError error)
@@ -271,7 +344,11 @@ void MainWindow::autoTest()
     QString requestData = "abcdefjhijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-+=,.?/;:'!@#$%^&*()";
     QSerialPort serial;
     QByteArray responseData;
-    QString testResult = "Serial Port:\n";
+    QString testResult = "";
+    testResult += "***************************\n";
+    testResult += "Device: " + testDevice+"\n";
+    testResult += "***************************\n";
+    testResult += "Serial Port:\n";
     QString cmdstr = "echo > /tmp/serial.txt";
     system(cmdstr.toLocal8Bit());
     int testTimes = 0;
@@ -337,26 +414,28 @@ void MainWindow::autoTest()
         QTextStream in(&file0);
         QString line=in.readAll();
         //ttymxc0
-        if(line.contains("ttymxc0 NOD")){
-            testResult += "COM0 is Not Detected.\n";
-        } else if (line.contains("ttymxc0 OK")){
+        if (line.contains("ttymxc0 OK")){
             testResult += "COM0 is OK.\n";
+        } else if(line.contains("ttymxc0 NOD")){
+            testResult += "COM0 is Not Detected.\n";
         } else {
             testResult += "COM0 is Not OK.\n";
         }
 
         //ttymxc1
-        if(line.contains("ttymxc1 NOD")){
-            if(testDevice == "CS10600RA070") {
-                testResult += "COM2 is Not Detected.\n";
-            }else{
-                testResult += "COM1 is Not Detected.\n";
-            }
-        } else if (line.contains("ttymxc1 OK")){
+        if (line.contains("ttymxc1 OK")){
             if(testDevice == "CS10600RA070") {
                 testResult += "COM2 is OK.\n";
             }else{
                 testResult += "COM1 is OK.\n";
+            }
+        } else if(line.contains("ttymxc1 NOD")){
+            if(testDevice == "CS10600RA070") {
+                testResult += "COM2 is Not Detected.\n";
+            }else{
+                if(testDevice != "CS10600RA4070" && testDevice != "CS12800RA101" && testDevice != "CS12800RA4101" && testDevice != "LRRA4-101"){
+                    testResult += "COM1 is Not Detected.\n";
+                }
             }
         } else {
             if(testDevice == "CS10600RA070") {
@@ -367,20 +446,20 @@ void MainWindow::autoTest()
         }
 
         //ttymxc2
-        if(line.contains("ttymxc2 NOD")){
-            if(testDevice == "CS10600RA070") {
-                testResult += "COM1 is Not Detected.\n";
-            }else{
-                testResult += "COM2 is Not Detected.\n";
-            }
-        } else if (line.contains("ttymxc2 OK")){
-            if(testDevice == "CS10600RA070") {
+        if (line.contains("ttymxc2 OK")){
+            if(testDevice == "CS10600RA070" || testDevice =="CS10600RA4070"  || testDevice =="CS12800RA101" || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101") {
                 testResult += "COM1 is OK.\n";
             }else{
                 testResult += "COM2 is OK.\n";
             }
+        } else if(line.contains("ttymxc2 NOD")){
+            if(testDevice == "CS10600RA070" || testDevice =="CS10600RA4070" || testDevice =="CS12800RA101"  || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101") {
+                testResult += "COM1 is Not Detected.\n";
+            }else{
+                testResult += "COM2 is Not Detected.\n";
+            }
         } else {
-            if(testDevice == "CS10600RA070") {
+            if(testDevice == "CS10600RA070" || testDevice =="CS10600RA4070"  || testDevice =="CS12800RA101"  || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101") {
                 testResult += "COM1 is Not OK.\n";
             }else{
                 testResult += "COM2 is Not OK.\n";
@@ -388,26 +467,66 @@ void MainWindow::autoTest()
         }
 
         //ttymxc3
-        if(line.contains("ttymxc3 NOD")){
-            testResult += "COM3 is Not Detected.\n";
-        } else if (line.contains("ttymxc3 OK")){
-            testResult += "COM3 is OK.\n";
+        if (line.contains("ttymxc3 OK")){
+            if(testDevice == "CS10600RA4070"  || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101"){
+                testResult += "COM2 is OK.\n";
+            }else if(testDevice == "CS12800RA101"){
+                testResult += "COM4 is OK.\n";
+            }else{
+                testResult += "COM3 is OK.\n";
+            }
+        }else if(line.contains("ttymxc3 NOD")){
+            if(testDevice != "CS10600RA070"){
+                if(testDevice == "CS10600RA4070"  || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101"){
+                    testResult += "COM2 is Not Detected.\n";
+                }else if(testDevice == "CS12800RA101"){
+                    testResult += "COM4 is Not Detected.\n";
+                }else{
+                    testResult += "COM3 is Not Detected.\n";
+                }
+            }
         } else {
-            testResult += "COM3 is Not OK.\n";
+            if(testDevice == "CS10600RA4070"  || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101"){
+                testResult += "COM2 is Not OK.\n";
+            }else if(testDevice == "CS12800RA101"){
+                testResult += "COM4 is Not OK.\n";
+            }else{
+                testResult += "COM3 is Not OK.\n";
+            }
         }
 
         //ttymxc4
-        if(line.contains("ttymxc4 NOD")){
-            testResult += "COM4 is Not Detected.\n";
-        } else if (line.contains("ttymxc4 OK")){
-            testResult += "COM4 is OK.\n";
+        if (line.contains("ttymxc4 OK")){
+            if(testDevice == "CS10600RA4070"){
+                testResult += "COM3 is OK.\n";
+            }else if(testDevice == "CS12800RA101"){
+                testResult += "COM5 is OK.\n";
+            }else{
+                testResult += "COM4 is OK.\n";
+            }
+        } else if(line.contains("ttymxc4 NOD")){
+            if(testDevice != "CS10600RA070" && testDevice != "CS12800RA4101" && testDevice != "LRRA4-101"){
+                if(testDevice == "CS10600RA4070"){
+                    testResult += "COM3 is Not Detected.\n";
+                }else if(testDevice == "CS12800RA101"){
+                    testResult += "COM5 is Not Detected.\n";
+                }else{
+                    testResult += "COM4 is Not Detected.\n";
+                }
+            }
         } else {
-            testResult += "COM4 is Not OK.\n";
+            if(testDevice =="CS10600RA4070"){
+                testResult += "COM3 is Not OK.\n";
+            }else if(testDevice == "CS12800RA101"){
+                testResult += "COM5 is Not OK.\n";
+            }else{
+                testResult += "COM4 is Not OK.\n";
+            }
         }
 
         // recheck ttymxc0 which will break other serial port.
         // one bug for this application
-        if(line.contains("ttymxc0 NOD")){
+        if(testResult.contains("COM0 is Not Detected")){
             testResult = "COM0 error, fix and test again.\n";
         }
 
@@ -416,8 +535,40 @@ void MainWindow::autoTest()
     }
     file0.close();
 
-    testResult += "\n";
-    testResult += "CAN Port:\n";
+    // CS12800RA101 ttyUSB0/ttyUSB1
+    if(testDevice == "CS12800RA101"){
+        QString filePath1 = "/tmp/serial23.txt";
+        QFile file1(filePath1);
+        if (file1.open(QIODevice::ReadWrite)){
+            QTextStream in(&file1);
+            QString line=in.readAll();
+
+            if(line.contains("ttyUSB0 OK")){
+                testResult +="COM2 is OK.\n";
+            } else if(line.contains("ttyUSB0 NOK")){
+                testResult +="COM2 is Not OK.\n";
+            } else{
+                testResult +="COM2 is Not Detected.\n";
+            }
+
+            if(line.contains("ttyUSB1 OK")){
+                testResult +="COM3 is OK.\n";
+            } else if(line.contains("ttyUSB1 NOK")){
+                testResult +="COM3 is Not OK.\n";
+            } else{
+                testResult +="COM3 is Not Detected.\n";
+            }
+
+        } else {
+            showStatusMessage(QString("Cann't open file %1, error code is %2").arg(filePath1).arg(file1.error()));
+        }
+        file1.close();
+    }
+
+    if(testDevice != "CS10600RA070" && testDevice != "CS12800RA4101" && testDevice != "LRRA4-101"){
+        testResult += "\n";
+        testResult += "CAN Port:\n";
+    }
 
     // Test CAN
     //QEventLoop eventloop;
@@ -425,42 +576,77 @@ void MainWindow::autoTest()
     eventloop.exec();
 
     showStatusMessage(tr("Testing can... ..."));
-    QString filePath = "/tmp/can0.txt";
-    QFile file(filePath);
-    if (file.open(QIODevice::ReadWrite)){
-        QTextStream in(&file);
+    QString can0filePath = "/tmp/can0.txt";
+    QFile can0file(can0filePath);
+    if (can0file.open(QIODevice::ReadWrite)){
+        QTextStream in(&can0file);
         QString line=in.readAll();
         if(line.contains("11 22 33 44 55 66 77 88")){
             testResult += "CAN0 is OK.\n";
         } else {
-            testResult += "CAN0 is not OK.\n";
+            if(testDevice != "CS10600RA070" && testDevice != "CS12800RA4101" && testDevice != "LRRA4-101"){
+                testResult += "CAN0 is not OK.\n";
+            }
         }
     } else {
-        showStatusMessage(QString("Cann't open file %1, error code is %2").arg(filePath).arg(file.error()));
+        showStatusMessage(QString("Cann't open file %1, error code is %2").arg(can0filePath).arg(can0file.error()));
     }
-    file.close();
+    can0file.close();
 
-    QString filePath1 = "/tmp/can1.txt";
-    QFile file1(filePath1);
-    if (file1.open(QIODevice::ReadWrite)){
-        QTextStream in(&file1);
+    QString can1filePath = "/tmp/can1.txt";
+    QFile can1file(can1filePath);
+    if (can1file.open(QIODevice::ReadWrite)){
+        QTextStream in(&can1file);
         QString line=in.readAll();
         if(line.contains("11 22 33 44 55 66 77 88")){
             testResult += "CAN1 is OK.\n";
         } else {
-            testResult += "CAN1 is not OK.\n";
+            if(testDevice != "CS10600RA4070" && testDevice != "CS12800RA101" && testDevice != "CS10600RA070" && testDevice != "CS12800RA4101" && testDevice != "LRRA4-101")
+            {
+                testResult += "CAN1 is not OK.\n";
+            }
         }
     } else {
-        showStatusMessage(QString("Cann't open file %1, error code is %2").arg(filePath1).arg(file.error()));
+        showStatusMessage(QString("Cann't open file %1, error code is %2").arg(can1filePath).arg(can1file.error()));
     }
-    file1.close();
+    can1file.close();
+
+    // Get RTC and Zigbee result
+    testResult += "\n";
+    testResult += "Other device:\n";
+
+    QString rtcfilePath = "/tmp/rtc.txt";
+        QFile rtcfile(rtcfilePath);
+        if (rtcfile.open(QIODevice::ReadWrite)){
+            QTextStream in(&rtcfile);
+            QString line=in.readAll();
+            testResult += line;
+        } else {
+            showStatusMessage(QString("Cann't open file %1, error code is %2").arg(rtcfilePath).arg(rtcfile.error()));
+        }
+        rtcfile.close();
+
+    QString zigbeefilePath = "/tmp/zigbee.txt";
+    QFile zigbeefile(zigbeefilePath);
+    if (zigbeefile.open(QIODevice::ReadWrite)){
+        QTextStream in(&zigbeefile);
+        QString line=in.readAll();
+        testResult += line;
+    } else {
+        showStatusMessage(QString("Cann't open file %1, error code is %2").arg(zigbeefilePath).arg(zigbeefile.error()));
+    }
+    zigbeefile.close();
+
     progressDialog->setValue(100);
     progressDialog->wasCanceled();
     showStatusMessage("Test end!");
     system("killall gst-play-1.0");
-    system("gst-play-1.0 /usr/hardwaretest/AutoTestFinish.aac >/dev/null &");
-    testResult += "\nDevice: " + testDevice;
+    system("gst-play-1.0 /usr/hardwaretest/AutoTestFinish.aac >/dev/null &");   
     showRequest(testResult);
+
+    // clear temp file
+    cmdstr = "rm /tmp/serial.txt && rm /tmp/can*.txt";
+    system(cmdstr.toLocal8Bit());
 
     autoRefreshTimer->start(5000);
 }

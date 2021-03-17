@@ -56,6 +56,7 @@ void Console::putData(const QByteArray &data)
 
     QScrollBar *bar = verticalScrollBar();
     bar->setValue(bar->maximum());
+
 }
 
 void Console::setLocalEchoEnabled(bool set)
