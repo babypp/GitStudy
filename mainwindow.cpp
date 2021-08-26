@@ -71,6 +71,25 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::Delay_MSec_Suspend(unsigned int msec)
+{
+    QTime _Timer = QTime::currentTime();
+
+    QTime _NowTimer;
+    do{
+              _NowTimer=QTime::currentTime();
+    }while (_Timer.msecsTo(_NowTimer)<=msec);
+}
+
+void MainWindow::Delay_MSec(unsigned int msec)
+{
+    QTime _Timer = QTime::currentTime().addMSecs(msec);
+
+    while( QTime::currentTime() < _Timer )
+
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+}
+
 void MainWindow::setTestDevice(QString &device)
 {
     testDevice = device;
@@ -146,7 +165,7 @@ void MainWindow::manCloseSerialPort()
 void MainWindow::about()
 {
     QMessageBox::about(this, tr("About Hardwaretest_master"),
-                       tr("<b>Hardwaretest_master v3.1 </b><br><br> The <b>Hardwaretest_master</b> used as chipsee hardwaretest master, "
+                       tr("<b>Hardwaretest_master v3.2 </b><br><br> The <b>Hardwaretest_master</b> used as chipsee hardwaretest master, "
                           "it works with hardwaretest_slave to test chipsee devices."));
 }
 
@@ -256,6 +275,8 @@ void MainWindow::initActionsConnections()
     connect(ui->actionEnter,&QAction::triggered,this,&MainWindow::enter);
     connect(ui->actionSerial,&QAction::triggered,this,&MainWindow::serialwigte);
     connect(ui->actionSetSlaveTime,&QAction::triggered,this,&MainWindow::setSlaveTime);
+    connect(ui->actionHunterTimeUpdate,&QAction::triggered,this,&MainWindow::HTUpdateTime);
+    connect(ui->actionHunterStoreTimeCheck,&QAction::triggered,this,&MainWindow::HTCheckStoreTime);
     connect(ui->actionAutoTest,&QAction::triggered,this,&MainWindow::autoTest);
     connect(ui->actionAbout, &QAction::triggered, this, &MainWindow::about);
 }
@@ -307,6 +328,34 @@ void MainWindow::enter()
     QByteArray data = "\n";
     serial->write(data);
     showStatusMessage(tr("send enter command OK!!"));
+}
+
+void MainWindow::HTUpdateTime()
+{
+    QByteArray data = "ubuntu\n";
+    serial->write(data);
+    Delay_MSec(5000);
+    serial->write(data);
+    data = "sleep 5 && sudo hwclock -w\n";
+    serial->write(data);
+    data = "\n\n\n\n";
+    serial->write(data);
+    data = "sudo hwclock\n";
+    serial->write(data);
+    showStatusMessage(tr("Update time ok, check the time!!"));
+}
+
+void MainWindow::HTCheckStoreTime()
+{
+    QByteArray data = "ubuntu\n";
+    serial->write(data);
+    Delay_MSec(5000);
+    serial->write(data);
+    data = "\n\n\n\n";
+    serial->write(data);
+    data = "sudo getpowerofftime\n";
+    serial->write(data);
+    showStatusMessage(tr("check the time!!"));
 }
 
 void MainWindow::autoTest()

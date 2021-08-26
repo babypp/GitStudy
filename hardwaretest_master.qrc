@@ -12,5 +12,7 @@
         <file>images/setTime.png</file>
         <file>images/Test.png</file>
         <file>images/player.png</file>
+        <file>images/update.jpg</file>
+        <file>images/confirm.jpg</file>
     </qresource>
 </RCC>

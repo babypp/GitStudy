@@ -27,6 +27,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void Delay_MSec_Suspend(unsigned int msec);
+    void Delay_MSec(unsigned int msec);
 
 private slots:
     void openSerialPort();
@@ -46,6 +48,8 @@ private slots:
     void sentRoot();
     void playAudio();
     void enter();
+    void HTUpdateTime();
+    void HTCheckStoreTime();
     void setTestDevice(QString &device);
 
 private:

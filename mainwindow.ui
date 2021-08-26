@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
+    <width>1094</width>
     <height>600</height>
    </rect>
   </property>
@@ -28,7 +28,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1024</width>
+     <width>1094</width>
      <height>22</height>
     </rect>
    </property>
@@ -55,6 +55,9 @@
     <addaction name="actionSerial"/>
     <addaction name="actionAutoTest"/>
     <addaction name="actionPlayAudio"/>
+    <addaction name="separator"/>
+    <addaction name="actionHunterTimeUpdate"/>
+    <addaction name="actionHunterStoreTimeCheck"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -83,7 +86,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <addaction name="actionRefresh"/>
    <addaction name="actionConnect"/>
@@ -98,6 +101,8 @@
    <addaction name="actionSetSlaveTime"/>
    <addaction name="separator"/>
    <addaction name="actionSerial"/>
+   <addaction name="actionHunterTimeUpdate"/>
+   <addaction name="actionHunterStoreTimeCheck"/>
    <addaction name="separator"/>
    <addaction name="actionAutoTest"/>
    <addaction name="separator"/>
@@ -217,6 +222,24 @@
    </property>
    <property name="text">
     <string>PlayAudio</string>
+   </property>
+  </action>
+  <action name="actionHunterTimeUpdate">
+   <property name="icon">
+    <iconset resource="hardwaretest_master.qrc">
+     <normaloff>:/images/update.jpg</normaloff>:/images/update.jpg</iconset>
+   </property>
+   <property name="text">
+    <string>HTUpdate</string>
+   </property>
+  </action>
+  <action name="actionHunterStoreTimeCheck">
+   <property name="icon">
+    <iconset resource="hardwaretest_master.qrc">
+     <normaloff>:/images/confirm.jpg</normaloff>:/images/confirm.jpg</iconset>
+   </property>
+   <property name="text">
+    <string>HTCheck</string>
    </property>
   </action>
  </widget>
