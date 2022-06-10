@@ -66,4 +66,3 @@ void MasterThread::run()
     }
     emit this->request(testResult);
 }
-
