@@ -165,7 +165,7 @@ void MainWindow::manCloseSerialPort()
 void MainWindow::about()
 {
     QMessageBox::about(this, tr("About Hardwaretest_master"),
-                       tr("<b>Hardwaretest_master v3.8 </b><br><br> The <b>Hardwaretest_master</b> used as chipsee hardwaretest master, "
+                       tr("<b>Hardwaretest_master v3.9 </b><br><br> The <b>Hardwaretest_master</b> used as chipsee hardwaretest master, "
                           "it works with hardwaretest_slave to test chipsee devices."));
 }
 
@@ -352,7 +352,7 @@ void MainWindow::reFresh()
 void MainWindow::playAudio()
 {
     autoRefreshTimer->stop();
-    system("gst-play-1.0 /usr/hardwaretest/AudioTest.aac");
+    system("gst-play-1.0 /usr/hardwaretest/AudioTest.wav");
     showStatusMessage(tr("Playing audio ... ..."));
     autoRefreshTimer->start(5000);
 }
