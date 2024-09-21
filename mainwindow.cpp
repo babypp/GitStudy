@@ -165,7 +165,7 @@ void MainWindow::manCloseSerialPort()
 void MainWindow::about()
 {
     QMessageBox::about(this, tr("About Hardwaretest_master"),
-                       tr("<b>Hardwaretest_master v3.9 </b><br><br> The <b>Hardwaretest_master</b> used as chipsee hardwaretest master, "
+                       tr("<b>Hardwaretest_master v4.0 </b><br><br> The <b>Hardwaretest_master</b> used as chipsee hardwaretest master, "
                           "it works with hardwaretest_slave to test chipsee devices."));
 }
 
@@ -212,12 +212,14 @@ void MainWindow::readData()
     }
 
     if(QString(data).contains("@@RK3568",Qt::CaseSensitive)){
-            //QString str = QString(data).mid(2).remove(QChar('\n'),Qt::CaseInsensitive);
-            //qDebug() << str;
             QString str ="RK3568";
             setTestDevice(str);
     }
 
+    if(QString(data).contains("@@RK3588",Qt::CaseSensitive)){
+            QString str ="RK3588";
+            setTestDevice(str);
+    }
 
     //ZIGBEE
     if(testDevice == "CS10600RA4070" || testDevice == "CS10600RA4070D" || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101" || testDevice == "CS12800RA4101BOX" || testDevice == "CS12800RA4101A" || testDevice == "CS12800RA4101P" || testDevice == "CS19108RA4133P" || testDevice == "CS10768RA4150P" || testDevice == "CS19108RA4156P" || testDevice == "CS19108RA4215P" || testDevice == "CS12800PX101"){
@@ -424,14 +426,22 @@ void MainWindow::autoTest()
     // CAN Init
     system("echo >/tmp/can0.txt");
     system("canconfig can0 stop");
-    system("canconfig can0 bitrate 10000 ctrlmode triple-sampling on loopback off ");
+    if (testDevice == "RK3588") {
+        system("canconfig can0 bitrate 100000 ctrlmode triple-sampling on loopback off ");
+    } else {
+        system("canconfig can0 bitrate 10000 ctrlmode triple-sampling on loopback off ");
+    }
     system("canconfig can0 start");
     system("cansend can0 0x11 0x22 0x33 0x44 0x55 0x66 0x77 0x88");
     system("candump can0 > /tmp/can0.txt &");
 
     system("echo >/tmp/can1.txt");
     system("canconfig can1 stop");
-    system("canconfig can1 bitrate 10000 ctrlmode triple-sampling on loopback off ");
+    if (testDevice == "RK3588") {
+        system("canconfig can1 bitrate 100000 ctrlmode triple-sampling on loopback off ");
+    } else {
+        system("canconfig can1 bitrate 10000 ctrlmode triple-sampling on loopback off ");
+    }
     system("canconfig can1 start");
     system("cansend can1 0x11 0x22 0x33 0x44 0x55 0x66 0x77 0x88");
     system("candump can1 > /tmp/can1.txt &");
@@ -529,10 +539,10 @@ void MainWindow::autoTest()
             if(testDevice == "CS10600RA070") {
                 testResult += "COM2 is Not Detected.\n";
             }else{
-                if(testDevice != "CS10600RA4070" && testDevice != "CS10600RA4070D" && testDevice != "CS12720RA4050" && testDevice != "CS12800RA101" && testDevice != "CS12800RA4101BOX" && testDevice != "CS12800RA4101" && testDevice != "LRRA4-101" && testDevice != "CS12800RA4101A" && testDevice != "CS12800RA4101P" && testDevice != "CS19108RA4133P" && testDevice != "CS10768RA4150P" && testDevice != "CS19108RA4156P" && testDevice != "CS19108RA4215P" && testDevice !="AM335XBOARD" && testDevice !="CS12800PX101" && testDevice !="CS12800R101P" && testDevice !="RK3568"){
+                if(testDevice != "CS10600RA4070" && testDevice != "CS10600RA4070D" && testDevice != "CS12720RA4050" && testDevice != "CS12800RA101" && testDevice != "CS12800RA4101BOX" && testDevice != "CS12800RA4101" && testDevice != "LRRA4-101" && testDevice != "CS12800RA4101A" && testDevice != "CS12800RA4101P" && testDevice != "CS19108RA4133P" && testDevice != "CS10768RA4150P" && testDevice != "CS19108RA4156P" && testDevice != "CS19108RA4215P" && testDevice !="AM335XBOARD" && testDevice !="CS12800PX101" && testDevice !="CS12800R101P" && testDevice !="RK3568" && testDevice !="RK3588"){
                     testResult += "COM1 is Not Detected.\n";
-                }else if(testDevice == "RK3568"){
-                    testResult += "COM1 is Not Detected. RK3568 5 and 10 Ignore it\n";
+                }else if(testDevice == "RK3568" || testDevice == "RK3588"){
+                    testResult += "COM1 is Not Detected. RK3568 RK3588 5 and 10 Ignore it\n";
                 }
             }
         } else {
@@ -713,10 +723,10 @@ void MainWindow::autoTest()
         if(line.contains("11 22 33 44 55 66 77 88")){
             testResult += "CAN0 is OK.\n";
         } else {
-            if(testDevice != "CS10600RA070" && testDevice != "CS12800RA4101" && testDevice != "LRRA4-101" && testDevice != "CS12800RA4101A" && testDevice !="RK3568"){
+            if(testDevice != "CS10600RA070" && testDevice != "CS12800RA4101" && testDevice != "LRRA4-101" && testDevice != "CS12800RA4101A" && testDevice !="RK3568" && testDevice != "RK3588"){
                 testResult += "CAN0 is not OK.\n";
-            } else if (testDevice == "RK3568") {
-                testResult += "CAN0 is not OK. RK3568 5 Ignore it.\n";
+            } else if (testDevice == "RK3568" || testDevice == "RK3588") {
+                testResult += "CAN0 is not OK. RK3568 RK3588 5 Ignore it.\n";
             }
         }
     } else {
