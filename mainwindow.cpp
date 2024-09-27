@@ -432,7 +432,7 @@ void MainWindow::autoTest()
     // CAN Init
     system("echo >/tmp/can0.txt");
     system("canconfig can0 stop");
-    if (testDevice == "RK3588" || testDevice == "IMX8MP") {
+    if (testDevice == "RK3568" || testDevice == "RK3588" || testDevice == "IMX8MP") {
         system("canconfig can0 bitrate 100000 ctrlmode triple-sampling on loopback off ");
     } else {
         system("canconfig can0 bitrate 10000 ctrlmode triple-sampling on loopback off ");
@@ -443,7 +443,7 @@ void MainWindow::autoTest()
 
     system("echo >/tmp/can1.txt");
     system("canconfig can1 stop");
-    if (testDevice == "RK3588" || testDevice == "IMX8MP") {
+    if (testDevice == "RK3568" || testDevice == "RK3588" || testDevice == "IMX8MP") {
         system("canconfig can1 bitrate 100000 ctrlmode triple-sampling on loopback off ");
     } else {
         system("canconfig can1 bitrate 10000 ctrlmode triple-sampling on loopback off ");
