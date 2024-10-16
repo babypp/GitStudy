@@ -165,7 +165,7 @@ void MainWindow::manCloseSerialPort()
 void MainWindow::about()
 {
     QMessageBox::about(this, tr("About Hardwaretest_master"),
-                       tr("<b>Hardwaretest_master v4.1 </b><br><br> The <b>Hardwaretest_master</b> used as chipsee hardwaretest master, "
+                       tr("<b>Hardwaretest_master v4.2 </b><br><br> The <b>Hardwaretest_master</b> used as chipsee hardwaretest master, "
                           "it works with hardwaretest_slave to test chipsee devices."));
 }
 
@@ -191,6 +191,16 @@ void MainWindow::readData()
         qDebug() << str;
         if(str == "CS12800RA4101B")
             str = "CS12800RA4101BOX";
+        setTestDevice(str);
+    }
+
+    if(QString(data).contains("@@CS12800RA4101",Qt::CaseSensitive)){
+        QString str = "CS12800RA4101";
+        setTestDevice(str);
+    }
+
+    if(QString(data).contains("@@CS12800RA4101P",Qt::CaseSensitive)){
+        QString str = "CS12800RA4101P";
         setTestDevice(str);
     }
 
