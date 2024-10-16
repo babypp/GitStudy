@@ -1,1 +1,12 @@
 *.user
+Makefile
+*.o
+hardwaretest_master
+moc_console.cpp
+moc_mainwindow.cpp
+moc_masterthread.cpp
+moc_settingsdialog.cpp
+qrc_hardwaretest_master.cpp
+ui_mainwindow.h
+ui_settingsdialog.h
+
