@@ -165,7 +165,7 @@ void MainWindow::manCloseSerialPort()
 void MainWindow::about()
 {
     QMessageBox::about(this, tr("About Hardwaretest_master"),
-                       tr("<b>Hardwaretest_master v4.3 </b><br><br> The <b>Hardwaretest_master</b> used as chipsee hardwaretest master, "
+                       tr("<b>Hardwaretest_master v4.5 </b><br><br> The <b>Hardwaretest_master</b> used as chipsee hardwaretest master, "
                           "it works with hardwaretest_slave to test chipsee devices."));
 }
 
@@ -555,7 +555,7 @@ void MainWindow::autoTest()
             if(testDevice == "CS10600RA070") {
                 testResult += "COM2 is Not Detected.\n";
             }else{
-                if(testDevice != "CS10600RA4070" && testDevice != "CS10600RA4070D" && testDevice != "CS12720RA4050" && testDevice != "CS12800RA101" && testDevice != "CS12800RA4101BOX" && testDevice != "CS12800RA4101" && testDevice != "LRRA4-101" && testDevice != "CS12800RA4101A" && testDevice != "CS12800RA4101P" && testDevice != "CS19108RA4133P" && testDevice != "CS10768RA4150P" && testDevice != "CS19108RA4156P" && testDevice != "CS19108RA4215P" && testDevice !="AM335XBOARD" && testDevice !="CS12800PX101" && testDevice !="CS12800R101P" && testDevice !="RK3568" && testDevice !="RK3588" && testDevice !="IMX8MP" && testDevice != "CS10600RA5070P"){
+                if(testDevice != "CS10600RA4070" && testDevice != "CS10600RA4070D" && testDevice != "CS12720RA4050" && testDevice != "CS12800RA101" && testDevice != "CS12800RA4101BOX" && testDevice != "CS12800RA4101" && testDevice != "LRRA4-101" && testDevice != "CS12800RA4101A" && testDevice != "CS12800RA4101P" && testDevice != "CS19108RA4133P" && testDevice != "CS10768RA4150P" && testDevice != "CS19108RA4156P" && testDevice != "CS19108RA4215P" && testDevice !="AM335XBOARD" && testDevice !="CS12800PX101" && testDevice !="CS12800R101P" && testDevice !="RK3568" && testDevice !="RK3588" && testDevice !="IMX8MP" && testDevice != "CS10600RA5070P" && testDevice != "CS19108RA4133PISO"){
                     testResult += "COM1 is Not Detected.\n";
                 }else if(testDevice == "RK3568" || testDevice == "RK3588" || testDevice == "IMX8MP"){
                     testResult += "COM1 is Not Detected. RK3568 RK3588 IMX8MP 5 and 10 Ignore it\n";
@@ -571,13 +571,13 @@ void MainWindow::autoTest()
 
         //ttymxc2
         if (line.contains("ttymxc2 OK")){
-            if(testDevice == "CS10600RA070" || testDevice =="CS10600RA4070" || testDevice =="CS10600RA4070D" || testDevice == "CS12720RA4050" || testDevice == "CS12800RA4101BOX" || testDevice =="CS12800RA101" || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101" || testDevice == "CS12800RA4101A" || testDevice == "CS12800RA4101P" || testDevice == "CS19108RA4133P" || testDevice == "CS10768RA4150P" || testDevice == "CS19108RA4156P" || testDevice == "CS19108RA4215P" || testDevice =="AM335XBOARD" || testDevice =="CS12800R101P" || testDevice =="CS10600RA5070P") {
+            if(testDevice == "CS10600RA070" || testDevice =="CS10600RA4070" || testDevice =="CS10600RA4070D" || testDevice == "CS12720RA4050" || testDevice == "CS12800RA4101BOX" || testDevice =="CS12800RA101" || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101" || testDevice == "CS12800RA4101A" || testDevice == "CS12800RA4101P" || testDevice == "CS19108RA4133P" || testDevice == "CS10768RA4150P" || testDevice == "CS19108RA4156P" || testDevice == "CS19108RA4215P" || testDevice =="AM335XBOARD" || testDevice =="CS12800R101P" || testDevice =="CS10600RA5070P" || testDevice == "CS19108RA4133PISO") {
                 testResult += "COM1 is OK.\n";
             }else{
                 testResult += "COM2 is OK.\n";
             }
         } else if(line.contains("ttymxc2 NOD")){
-            if(testDevice == "CS10600RA070" || testDevice =="CS10600RA4070" || testDevice =="CS10600RA4070D" || testDevice == "CS12720RA4050" || testDevice == "CS12800RA4101BOX" || testDevice =="CS12800RA101"  || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101" || testDevice == "CS12800RA4101A" || testDevice == "CS12800RA4101P" || testDevice == "CS19108RA4133P" || testDevice == "CS10768RA4150P" || testDevice == "CS19108RA4156P" || testDevice == "CS19108RA4215P" || testDevice =="AM335XBOARD" || testDevice =="CS12800R101P" || testDevice =="CS10600RA5070P") {
+            if(testDevice == "CS10600RA070" || testDevice =="CS10600RA4070" || testDevice =="CS10600RA4070D" || testDevice == "CS12720RA4050" || testDevice == "CS12800RA4101BOX" || testDevice =="CS12800RA101"  || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101" || testDevice == "CS12800RA4101A" || testDevice == "CS12800RA4101P" || testDevice == "CS19108RA4133P" || testDevice == "CS10768RA4150P" || testDevice == "CS19108RA4156P" || testDevice == "CS19108RA4215P" || testDevice =="AM335XBOARD" || testDevice =="CS12800R101P" || testDevice =="CS10600RA5070P" || testDevice == "CS19108RA4133PISO") {
                 testResult += "COM1 is Not Detected.\n";
             }else if(testDevice =="CS12800PX101"){
 
@@ -585,7 +585,7 @@ void MainWindow::autoTest()
                 testResult += "COM2 is Not Detected.\n";
             }
         } else {
-            if(testDevice == "CS10600RA070" || testDevice =="CS10600RA4070" || testDevice =="CS10600RA4070D" || testDevice == "CS12720RA4050" || testDevice =="CS12800RA4101BOX" || testDevice =="CS12800RA101"  || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101" || testDevice == "CS12800RA4101A" || testDevice == "CS12800RA4101P" || testDevice == "CS19108RA4133P" || testDevice == "CS10768RA4150P" || testDevice == "CS19108RA4156P" || testDevice == "CS19108RA4215P" || testDevice =="AM335XBOARD" || testDevice =="CS12800R101P" || testDevice =="CS10600RA5070P") {
+            if(testDevice == "CS10600RA070" || testDevice =="CS10600RA4070" || testDevice =="CS10600RA4070D" || testDevice == "CS12720RA4050" || testDevice =="CS12800RA4101BOX" || testDevice =="CS12800RA101"  || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101" || testDevice == "CS12800RA4101A" || testDevice == "CS12800RA4101P" || testDevice == "CS19108RA4133P" || testDevice == "CS10768RA4150P" || testDevice == "CS19108RA4156P" || testDevice == "CS19108RA4215P" || testDevice =="AM335XBOARD" || testDevice =="CS12800R101P" || testDevice =="CS10600RA5070P" || testDevice == "CS19108RA4133PISO") {
                 testResult += "COM1 is Not OK.\n";
             }else{
                 testResult += "COM2 is Not OK.\n";
@@ -594,7 +594,7 @@ void MainWindow::autoTest()
 
         //ttymxc3
         if (line.contains("ttymxc3 OK")){
-            if(testDevice == "CS10600RA4070" || testDevice == "CS10600RA4070D" || testDevice == "CS12720RA4050" || testDevice =="CS12800RA4101BOX" || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101" || testDevice == "CS12800RA4101A" || testDevice == "CS12800RA4101P" || testDevice == "CS19108RA4133P" || testDevice == "CS10768RA4150P" || testDevice == "CS19108RA4156P" || testDevice == "CS19108RA4215P" || testDevice =="AM335XBOARD" || testDevice =="CS12800R101P" || testDevice =="CS10600RA5070P"){
+            if(testDevice == "CS10600RA4070" || testDevice == "CS10600RA4070D" || testDevice == "CS12720RA4050" || testDevice =="CS12800RA4101BOX" || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101" || testDevice == "CS12800RA4101A" || testDevice == "CS12800RA4101P" || testDevice == "CS19108RA4133P" || testDevice == "CS10768RA4150P" || testDevice == "CS19108RA4156P" || testDevice == "CS19108RA4215P" || testDevice =="AM335XBOARD" || testDevice =="CS12800R101P" || testDevice =="CS10600RA5070P" || testDevice == "CS19108RA4133PISO"){
                 testResult += "COM2 is OK.\n";
             }else if(testDevice == "CS12800RA101"){
                 testResult += "COM4 is OK.\n";
@@ -605,7 +605,7 @@ void MainWindow::autoTest()
             }
         }else if(line.contains("ttymxc3 NOD")){
             if(testDevice != "CS10600RA070"){
-                if(testDevice == "CS10600RA4070" || testDevice == "CS10600RA4070D" || testDevice == "CS12720RA4050" || testDevice == "CS12800RA4101BOX" || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101" || testDevice == "CS12800RA4101A" || testDevice == "CS12800RA4101P" || testDevice == "CS19108RA4133P" || testDevice == "CS10768RA4150P" || testDevice == "CS19108RA4156P" || testDevice == "CS19108RA4215P" || testDevice == "AM335XBOARD" || testDevice =="CS12800R101P" || testDevice =="CS10600RA5070P"){
+                if(testDevice == "CS10600RA4070" || testDevice == "CS10600RA4070D" || testDevice == "CS12720RA4050" || testDevice == "CS12800RA4101BOX" || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101" || testDevice == "CS12800RA4101A" || testDevice == "CS12800RA4101P" || testDevice == "CS19108RA4133P" || testDevice == "CS10768RA4150P" || testDevice == "CS19108RA4156P" || testDevice == "CS19108RA4215P" || testDevice == "AM335XBOARD" || testDevice =="CS12800R101P" || testDevice =="CS10600RA5070P" || testDevice == "CS19108RA4133PISO"){
                     testResult += "COM2 is Not Detected.\n";
                 }else if(testDevice == "CS12800RA101"){
                     testResult += "COM4 is Not Detected.\n";
@@ -616,7 +616,7 @@ void MainWindow::autoTest()
                 }
             }
         } else {
-            if(testDevice == "CS10600RA4070" || testDevice == "CS10600RA4070D" || testDevice == "CS12720RA4050" || testDevice == "CS12800RA4101BOX" || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101" || testDevice == "CS12800RA4101A" || testDevice == "CS12800RA4101P" || testDevice == "CS19108RA4133P" || testDevice == "CS10768RA4150P" || testDevice == "CS19108RA4156P" || testDevice == "CS19108RA4215P" || testDevice == "AM335XBOARD" || testDevice =="CS12800R101P" || testDevice =="CS10600RA5070P"){
+            if(testDevice == "CS10600RA4070" || testDevice == "CS10600RA4070D" || testDevice == "CS12720RA4050" || testDevice == "CS12800RA4101BOX" || testDevice == "CS12800RA4101" || testDevice == "LRRA4-101" || testDevice == "CS12800RA4101A" || testDevice == "CS12800RA4101P" || testDevice == "CS19108RA4133P" || testDevice == "CS10768RA4150P" || testDevice == "CS19108RA4156P" || testDevice == "CS19108RA4215P" || testDevice == "AM335XBOARD" || testDevice =="CS12800R101P" || testDevice =="CS10600RA5070P" || testDevice == "CS19108RA4133PISO"){
                 testResult += "COM2 is Not OK.\n";
             }else if(testDevice == "CS12800RA101"){
                 testResult += "COM4 is Not OK.\n";
@@ -642,7 +642,7 @@ void MainWindow::autoTest()
                     testResult += "COM3 is Not Detected.\n";
                 }else if(testDevice == "CS12800RA101"){
                     testResult += "COM5 is Not Detected.\n";
-                }else if(testDevice =="CS12800PX101"){
+                }else if(testDevice =="CS12800PX101" || testDevice == "CS19108RA4133PISO"){
                 }else{
                     testResult += "COM4 is Not Detected.\n";
                 }
@@ -758,7 +758,7 @@ void MainWindow::autoTest()
         if(line.contains("11 22 33 44 55 66 77 88")){
             testResult += "CAN1 is OK.\n";
         } else {
-            if(testDevice != "CS10600RA4070" && testDevice != "CS10600RA4070D" && testDevice != "CS12720RA4050" && testDevice != "CS12800RA4101BOX" && testDevice != "CS12800RA101" && testDevice != "CS10600RA070" && testDevice != "CS12800RA4101" && testDevice != "LRRA4-101" && testDevice != "CS12800RA4101A" && testDevice != "CS12800RA4101P" && testDevice != "CS19108RA4133P" && testDevice != "CS10768RA4150P" && testDevice != "CS19108RA4156P" && testDevice != "CS19108RA4215P" && testDevice !="CS12800PX101" && testDevice !="CS12800R101P" && testDevice != "CS10600RA5070P")
+            if(testDevice != "CS10600RA4070" && testDevice != "CS10600RA4070D" && testDevice != "CS12720RA4050" && testDevice != "CS12800RA4101BOX" && testDevice != "CS12800RA101" && testDevice != "CS10600RA070" && testDevice != "CS12800RA4101" && testDevice != "LRRA4-101" && testDevice != "CS12800RA4101A" && testDevice != "CS12800RA4101P" && testDevice != "CS19108RA4133P" && testDevice != "CS10768RA4150P" && testDevice != "CS19108RA4156P" && testDevice != "CS19108RA4215P" && testDevice !="CS12800PX101" && testDevice !="CS12800R101P" && testDevice != "CS10600RA5070P" && testDevice != "CS19108RA4133PISO")
             {
                 testResult += "CAN1 is not OK.\n";
             }

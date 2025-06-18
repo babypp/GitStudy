@@ -1,4 +1,5 @@
 *.user
+*.user.*
 Makefile
 *.o
 hardwaretest_master
